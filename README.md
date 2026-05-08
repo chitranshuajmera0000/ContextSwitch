@@ -22,9 +22,9 @@ This repository contains the complete source code, documentation, and pre-compil
 Explore our comprehensive technical and product documentation:
 *   [📘 Pitch Document](docs/PITCH.md): Problem, Solution, and Value Proposition.
 *   [🏛️ Technical Architecture](docs/ARCHITECTURE.md): System design, security, and AI pipeline.
-*   [⚖️ AI Disclosure](docs/AI_DISCLOSURE.md): Breakdown of AI usage and model details.
+*   [⚖️ AI Disclosure](docs/ContextSwitch_AI_Disclosure.docx): Breakdown of AI usage and model details.
 *   [📜 Feature Guide](docs/FEATURE_GUIDE.md): Full end-to-end user manual.
-*   [🔗 Live Demo Links](https://drive.google.com/file/d/1-2F0IU8upqdYtcoG0Ai7ItmxXKYO_E_s/view?usp=sharing): Quick access to video and live instances.
+*   [🎥 Video Demo](docs/VIDEO_DEMO.md): Quick access to the system demonstration.
 
 ---
 
