@@ -1,0 +1,14 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+.gitignore
+.env
+.env.example
+tsconfig.json
+tslint.json
+*.vsix
+patch.js
+package-lock.json
+node_modules/**
+**/node_modules/**
