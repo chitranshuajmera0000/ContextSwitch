@@ -61,7 +61,7 @@ npm run dev
 *View dashboard at `http://localhost:5173`.*
 
 ### 3. Extension Installation
-Install the pre-compiled package found at `extension/contextswitch-extension-0.0.5.vsix` directly into VS Code.
+Install the pre-compiled package found at `extension/contextswitch-extension-0.0.7.vsix ` directly into VS Code.
 
 ---
 

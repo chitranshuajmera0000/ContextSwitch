@@ -43,7 +43,7 @@ export default function Overview() {
   // Bug 4 fix: poll all enhanced events across all projects, newest first, refresh every 10s
   const { data: liveEventsData, refetch: refetchLiveEvents } = usePolling(getAllEnhancedEvents, 10000);
 
-  useWebSocket('ws://localhost:3001/ws', message => {
+  useWebSocket('ws://10.20.0.37:3001/ws', message => {
     if (message?.type !== 'events_updated') return;
     refetchStats();
     refetchTimeline();

@@ -83,7 +83,7 @@ export default function Analytics() {
   const { data: sessionsData, refetch: refetchSessions } = useApi(() => getSessionHistory(100));
   const { data: eventsRaw, refetch: refetchEvents } = useApi(getAllEvents);
 
-  useWebSocket('ws://localhost:3001/ws', message => {
+  useWebSocket('ws://10.20.0.37:3001/ws', message => {
     if (message?.type !== 'events_updated') return;
     refetchTimeline();
     refetchStaleness();

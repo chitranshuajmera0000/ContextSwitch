@@ -54,7 +54,7 @@ export default function AISynthesis() {
   const events = Array.isArray(eventsRaw) ? eventsRaw : [];
   const projects = [...new Set(events.map(e => e.project).filter(Boolean))];
 
-  useWebSocket('ws://localhost:3001/ws', message => {
+  useWebSocket('ws://10.20.0.37:3001/ws', message => {
     if (message?.type !== 'events_updated') return;
   });
 

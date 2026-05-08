@@ -25,7 +25,7 @@ export default function TopBar() {
   const session = activeData?.activeProjects?.[0]?.sessions?.[0];
   const activeProjectsCount = activeData?.activeProjectsCount ?? activeData?.activeProjects?.length ?? 0;
 
-  useWebSocket('ws://localhost:3001/ws', message => {
+  useWebSocket('ws://10.20.0.37:3001/ws', message => {
     if (message?.type !== 'events_updated') return;
     setLiveVisible(true);
   });

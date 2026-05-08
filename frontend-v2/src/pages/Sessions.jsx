@@ -32,7 +32,7 @@ export default function Sessions() {
   const sessionEvents = sessionEventsData?.events || [];
 
   // WebSocket for Instant Sync
-  useWebSocket('ws://localhost:3001/ws', (msg) => {
+  useWebSocket('ws://10.20.0.37:3001/ws', (msg) => {
     if (msg.type === 'events_updated' || msg.type === 'session_summary_ready') {
       refetchHistory();
       if (selected?.id) refetchSessionEvents();

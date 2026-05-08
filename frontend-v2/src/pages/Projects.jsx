@@ -74,7 +74,7 @@ export default function Projects() {
   const active = sorted.filter(p => p.status === 'active').length;
   const stale = sorted.filter(p => stalePct(p.staleness) >= 60).length;
 
-  useWebSocket('ws://localhost:3001/ws', message => {
+  useWebSocket('ws://10.20.0.37:3001/ws', message => {
     if (message?.type !== 'events_updated') return;
     refetchEvents();
     refetchStaleness();
