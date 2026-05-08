@@ -17,6 +17,19 @@ Every developer faces these friction points daily:
 
 > **KEY INSIGHT:** ContextSwitch acts as a digital black box for your development process — silently recording every file save, error, and terminal command, then using AI to reconstruct the intent and hypothesis behind that work.
 
+### 1.2 Platform Architecture at a Glance
+The platform is composed of four tightly integrated components that span three distinct layers:
+
+| Layer | Component | Technology | Role |
+| :--- | :--- | :--- | :--- |
+| **Capture** | VS Code Extension v0.0.5 | TypeScript, VS Code API | Streams file saves, diffs, errors to backend |
+| **Synthesis** | Express Backend API | Node.js, Express 4.18 | Auth, ingestion, AI orchestration |
+| **Synthesis** | WebSocket Ingestion Server | ws library, port 3002 | Real-time event streaming from IDE |
+| **Synthesis** | SQLite Database | Better-SQLite3, FTS5 | Persists all events, sessions, memory nodes |
+| **Synthesis** | AI Engine | Groq LPU + llama-3 | Generates session summaries and handoffs |
+| **Presentation** | React Dashboard | React 18, Vite, Tailwind | Analytics, heatmaps, session history |
+| **Presentation** | Telegram Bot | Telegram Bot API | Mobile access to session summaries |
+
 ---
 
 ## 2. Core Features
@@ -31,52 +44,80 @@ The flagship feature of ContextSwitch. When a developer ends a session, the plat
 4.  A multi-prompt strategy is submitted to the **Groq LPU API** for ultra-low-latency inference.
 5.  The generated summary is persisted in the database and surfaced in both the VS Code sidebar and the web dashboard.
 
-> **PERFORMANCE NOTE:** Groq's LPU achieves inference speeds of 500–700 tokens per second — orders of magnitude faster than GPU-based inference. A full session summary is generated in under 3 seconds.
+**AI Summary Types:**
+| Summary Type | Prompt Strategy | Audience | Use Case |
+| :--- | :--- | :--- | :--- |
+| **Context Brief** | 30-second reconstruction | Developer themselves | Resume work instantly after any interruption |
+| **Project Handoff** | Detailed technical overview | Teammate or reviewer | Zero-friction knowledge transfer |
+| **Daily Digest** | High-level narrative | Manager or personal log | End-of-day progress tracking |
+
+> **PERFORMANCE NOTE:** Groq's LPU (Language Processing Unit) achieves inference speeds of 500–700 tokens per second — orders of magnitude faster than GPU-based inference. This means a full session summary is generated and displayed in under 3 seconds.
 
 ### 2.2 VS Code Extension — Deep IDE Integration
-The ContextSwitch VS Code extension (v0.0.5) provides seamless, zero-friction event capture directly inside the developer's IDE.
+The ContextSwitch VS Code extension (version 0.0.5) provides seamless, zero-friction event capture directly inside the developer's IDE.
 
-**Key Commands:**
-*   `ContextSwitch: Open Side Panel`: Opens the session sidebar webview.
-*   `ContextSwitch: Add Brain Dump`: Captures a free-text thought or hypothesis.
-*   `ContextSwitch: Show Context Summary`: Displays the current AI context brief.
+**Extension Commands:**
+| Command | Action |
+| :--- | :--- |
+| `ContextSwitch: Open Side Panel` | Opens the session sidebar webview |
+| `ContextSwitch: Add Brain Dump` | Captures a free-text thought or hypothesis to current session |
+| `ContextSwitch: Show Context Summary` | Displays current AI-generated context brief |
+| `ContextSwitch: Reset and Login` | Clears stored auth token and shows the login screen |
+
+**Event Capture Strategy:**
+The extension uses an intelligent two-phase capture strategy to minimize noise while maximizing signal:
+*   **Phase 1 — Aggregate in memory**: Every keystroke change is captured in a per-file change aggregator. No network calls are made during typing.
+*   **Phase 2 — Flush on save**: When the developer saves a file, all aggregated changes are condensed into a single diff summary and pushed to the event queue.
+*   **Periodic sync**: A background timer fires every 10 seconds to flush any queued events to the backend.
 
 ### 2.3 Analytics Dashboard
 The React-based dashboard provides a high-fidelity, dark-mode analytics interface for reviewing development history.
-*   **Overview**: Summary cards for total sessions, events, and active projects.
-*   **Sessions**: Full history with AI summaries and event timelines.
-*   **Analytics**: Activity heatmaps and language breakdowns.
+
+**Dashboard Pages:**
+| Page | Route | Description |
+| :--- | :--- | :--- |
+| **Overview** | `/` | Summary cards: total sessions, events, active projects, recent activity timeline |
+| **Projects** | `/projects` | Per-project breakdown of sessions, file activity, and staleness scores |
+| **Sessions** | `/sessions` | Full session history with AI summaries, event counts, duration, and CRUD actions |
+| **Brain Dumps** | `/brain-dumps` | Free-text developer notes linked to sessions, with create/edit/delete |
+| **Analytics** | `/analytics` | Charts and heatmaps: activity over time, most-edited files, language breakdown |
 
 ---
 
 ## 3. Installation & Setup Guide
 
-### 3.1 Backend Setup
-```bash
-npm install
-cp .env.example .env
-# Set GROQ_API_KEY, JWT_SECRET
-npm run dev
-```
+### 3.1 Prerequisites
+| Dependency | Version | Notes |
+| :--- | :--- | :--- |
+| **Node.js** | 18+ | Required for backend and frontend |
+| **VS Code** | 1.80.0+ | Required for the extension |
+| **Groq API Key** | Free tier | Get at console.groq.com |
 
-### 3.2 Frontend Setup
-```bash
-cd frontend-v2
-npm install
-npm run dev
-```
+### 3.2 Backend Setup
+1.  Navigate to the root directory and install dependencies: `npm install`
+2.  Create your environment configuration: `cp .env.example .env`
+3.  Set `GROQ_API_KEY` and `JWT_SECRET` in your `.env` file.
+4.  Start the server: `npm run dev`
 
-### 3.3 VS Code Extension
-Install the pre-compiled package found at `extension/contextswitch-extension-0.0.7.vsix` directly into VS Code via the "Install from VSIX" command.
+### 3.3 VS Code Extension Installation
+Install the pre-compiled package found at `extension/contextswitch-extension-0.0.7.vsix` directly into VS Code via the "Install from VSIX" command in the Extensions view.
 
 ---
 
-## 4. Technical Architecture
-ContextSwitch uses a high-performance stack:
-*   **Backend**: Node.js / Express
-*   **Database**: SQLite with FTS5 for semantic memory.
-*   **AI**: Groq LPU (llama-3) for real-time synthesis.
-*   **Frontend**: React 18 / Vite / Tailwind.
+## 4. Technical Architecture Deep Dive
+
+### 4.1 Database Schema
+All data is persisted in a single Better-SQLite3 database file:
+*   `users`: Authentication and multi-tenancy anchor.
+*   `sessions`: Session lifecycle and AI output.
+*   `events`: Raw captured IDE events.
+*   `brain_dumps`: Developer free-text notes.
+*   `staleness`: Per-file activity tracking.
+
+### 4.2 Security Model
+*   JWT tokens are signed and stored securely in VS Code's Secret Storage.
+*   Every database query includes strict `user_id` scoping for data isolation.
+*   No source code is sent to external servers — only minimal event diffs.
 
 ---
 *ContextSwitch — Version 0.0.5 — Samsung Prism 2026*
