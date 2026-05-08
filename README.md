@@ -22,7 +22,6 @@ This repository contains the complete source code, documentation, and pre-compil
 Explore our comprehensive technical and product documentation:
 *   [📘 Pitch Document](docs/PITCH.md): Problem, Solution, and Value Proposition.
 *   [🏛️ Technical Architecture](docs/ARCHITECTURE.md): System design, security, and AI pipeline.
-*   [🧪 Validation Report](docs/VALIDATION.md): Automated test results for every system feature.
 *   [⚖️ AI Disclosure](docs/ContextSwitch_AI_Disclosure.docx): Breakdown of AI usage and model details.
 *   [📜 Feature Guide](docs/ContextSwitch_Feature_Guide.docx): Full end-to-end user manual.
 *   [🔗 Live Demo Links](docs/Live_Demo_Link.docx): Quick access to video and live instances.
